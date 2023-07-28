@@ -1,28 +1,49 @@
-import React, { useState, MouseEvent } from "react";
-import "./SpinButton.css";
+import React, { useState, MouseEvent, useEffect } from 'react';
+import './SpinButton.css';
 
-const SpinButton: React.FC = () => {
+interface SpinButtonProps {
+  labelName: string;
+}
+
+const SpinButton = ({ labelName }: SpinButtonProps) => {
   const [count, setCount] = useState<number>(0);
   const [isTooltipVisible, setIsTooltipVisible] = useState<boolean>(false);
+  const [announceMsg, setAnnounceMsg] = useState<string>();
 
   const increment = () => {
-    setCount((prevCount) => prevCount + 1);
+    if (count < 3) {
+      setCount((prevCount) => prevCount + 1);
+      setAnnounceMsg(`${labelName} 승객 ${count + 1} 추가`);
+    }
   };
 
   const decrement = () => {
-    setCount((prevCount) => prevCount - 1);
+    if (count > 0) {
+      setCount((prevCount) => prevCount - 1);
+      setAnnounceMsg(`${labelName} 승객 ${count - 1} 감소`);
+    }
   };
 
   const toggleTooltip = (event: MouseEvent<HTMLDivElement>) => {
     setIsTooltipVisible(!isTooltipVisible);
   };
 
+  useEffect(() => {
+    if (announceMsg) {
+      const guideAnnounce = document.getElementById('announce-message');
+
+      if (guideAnnounce) {
+        guideAnnounce.textContent = announceMsg;
+      }
+    }
+  }, [announceMsg]);
+
   return (
     <section className="spinButtonContainer">
       <div>
         <h1>승객 선택</h1>
         <div className="spinButtonLabel">
-          <label>성인</label>
+          <label>{labelName}</label>
           <div
             className="helpIcon"
             onMouseEnter={toggleTooltip}
@@ -34,19 +55,36 @@ const SpinButton: React.FC = () => {
             )}
           </div>
         </div>
-        <button onClick={decrement} className="spinButton">
+        <button
+          aria-label={`${labelName} 승객 줄이기`}
+          onClick={decrement}
+          className="spinButton"
+        >
           -
         </button>
         <input
           type="text"
           role="spinbutton"
+          aria-label="텍스트 숫자만 수정"
+          aria-valuemax={3}
+          aria-valuemin={0}
           readOnly
           className="spinButtonInput"
           value={count}
         />
-        <button onClick={increment} className="spinButton">
+        <button
+          aria-label={`${labelName} 승객 늘리기`}
+          onClick={increment}
+          className="spinButton"
+        >
           +
         </button>
+        <p
+          id="announce-message"
+          className="hidden"
+          aria-atomic="true"
+          aria-live="assertive"
+        />
       </div>
     </section>
   );

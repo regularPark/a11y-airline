@@ -1,5 +1,6 @@
 .spinButtonContainer {
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -64,4 +65,10 @@
   font-weight: bold;
   padding: 0 16px;
   margin-bottom: 8px;
+}
+
+.hidden {
+  width: 0px;
+  height: 0px;
+  overflow: hidden;
 }
